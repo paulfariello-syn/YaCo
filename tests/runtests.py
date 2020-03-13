@@ -46,10 +46,10 @@ def remove_dir(dirname):
 
 def sysexec(cwd, *args):
     if False:
-        print cwd + ": " + " ".join(*args)
+        print(cwd + ": " + " ".join(*args))
     output = subprocess.check_output(*args, cwd=cwd, stderr=subprocess.STDOUT, shell=False)
     if False:
-        print output
+        print(output)
     return output
 
 ida_start = """
@@ -358,7 +358,7 @@ idc.save_database("")
             with open(name, "rb") as fh:
                 data = fh.read()
                 if filter:
-                    data = filter(data)
+                    data = list(filter(data))
             if data != want:
                 self.fail("\n" + "".join(difflib.unified_diff(want.splitlines(1), data.splitlines(1), want_filename, name)))
         return check
@@ -473,9 +473,11 @@ def get_tests(args, cur_dir):
     tests = unittest.TestSuite()
     for s in unittest.defaultTestLoader.discover(os.path.join(cur_dir, "tests")):
         for f in s:
+            if not isinstance(f, unittest.TestSuite):
+                continue
             for test in f:
                 if args.list:
-                    print test.id()
+                    print(test.id())
                 if test.id().endswith(args.filter):
                     tests.addTest(test)
     return tests

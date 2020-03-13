@@ -58,7 +58,7 @@
     if (PyLong_Check($input))
         $1 = static_cast<ea_t>(PyLong_AsUnsignedLongLongMask($input));
     else if(PyInt_Check($input))
-        $1 = static_cast<ea_t>(PyInt_AsUnsignedLongMask($input));
+        $1 = static_cast<ea_t>(PyLong_AsUnsignedLongMask($input));
     else
         SWIG_exception_fail(SWIG_ValueError, "invalid ea_t value");
 }
