@@ -131,13 +131,15 @@ namespace
 
 Visitor::Visitor(StackMode smode)
     : qpool_(4)
-    , had_auto_enabled_(inf.is_auto_enabled())
+    , had_auto_enabled_(inf_is_auto_enabled())
     , use_stack_(smode == USE_STACK)
 {
-    inf.set_auto_enabled(false);
+    inf_set_auto_enabled(false);
 
-    static_assert(sizeof ARM_txt <= sizeof inf.procname, "procname size mismatch");
-    if(!memcmp(inf.procname, ARM_txt, sizeof ARM_txt))
+    char procname[IDAINFO_PROCNAME_SIZE];
+    inf_get_procname(procname);
+    static_assert(sizeof ARM_txt <= IDAINFO_PROCNAME_SIZE, "procname size mismatch");
+    if(!memcmp(procname, ARM_txt, sizeof ARM_txt))
         plugin_ = MakeArmPluginVisitor();
 
     const auto qbuf = qpool_.acquire();
@@ -177,7 +179,7 @@ Visitor::Visitor(StackMode smode)
 
 Visitor::~Visitor()
 {
-    inf.set_auto_enabled(had_auto_enabled_);
+    inf_set_auto_enabled(had_auto_enabled_);
 }
 
 namespace
