@@ -961,10 +961,10 @@ void Events::update()
 
     // Let IDA apply modifications
     const auto time_start = std::chrono::system_clock::now();
-    const auto prev = inf.is_auto_enabled();
-    inf.set_auto_enabled(true);
+    const auto prev = inf_is_auto_enabled();
+    inf_set_auto_enabled(true);
     auto_wait();
-    inf.set_auto_enabled(prev);
+    inf_set_auto_enabled(prev);
     refresh_idaview_anyway();
     const auto time_end = std::chrono::system_clock::now();
     const auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(time_end - time_start).count();

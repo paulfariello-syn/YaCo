@@ -219,7 +219,9 @@ namespace
             : parent_   (parent)
             , qpool_    (4)
         {
-            if(!strncmp(inf.procname, "ARM", sizeof inf.procname))
+            char procname[IDAINFO_PROCNAME_SIZE];
+            inf_get_procname(procname);
+            if(!strncmp(procname, "ARM", IDAINFO_PROCNAME_SIZE))
                 plugin_ = MakeArmPluginModel();
         }
 
