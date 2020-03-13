@@ -574,7 +574,7 @@ namespace
         const auto name = ctx.qpool_.acquire();
         if(!func)
         {
-            ya::wrap(&get_struc_name, *name, struc->id);
+            ya::wrap(&get_struc_name, *name, struc->id, 0);
             v.visit_name(ya::to_string_ref(*name), DEFAULT_NAME_FLAGS);
         }
         if(struc->is_union())

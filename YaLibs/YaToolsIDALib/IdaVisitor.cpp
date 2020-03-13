@@ -1884,7 +1884,7 @@ namespace
         }
 
         const auto sname = visitor.qpool_.acquire();
-        ya::wrap(&get_struc_name, *sname, parent.tid);
+        ya::wrap(&get_struc_name, *sname, parent.tid, 0);
         const auto func = get_func(get_func_by_frame(struc->id));
         if(func)
             ya::wrap(&get_func_name, *sname, func->start_ea);
@@ -1981,7 +1981,7 @@ namespace
     bool rename_struc(Visitor& visitor, struc_t* struc, const std::string& name)
     {
         const auto old = visitor.qpool_.acquire();
-        ya::wrap(&get_struc_name, *old, struc->id);
+        ya::wrap(&get_struc_name, *old, struc->id, 0);
         if(ya::to_string_ref(*old) == make_string_ref(name))
             return true;
 

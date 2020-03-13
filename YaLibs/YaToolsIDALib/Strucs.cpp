@@ -105,7 +105,7 @@ namespace
     Reply hash_with_struc(ea_t id)
     {
         qstring qbuf;
-        ya::wrap(&get_struc_name, qbuf, id);
+        ya::wrap(&get_struc_name, qbuf, id, 0);
         return hash_struc(qbuf.c_str());
     }
 
@@ -184,7 +184,7 @@ namespace strucs
     void set_tag(ea_t id, const Tag& tag)
     {
         qstring qbuf;
-        ya::wrap(&get_struc_name, qbuf, id);
+        ya::wrap(&get_struc_name, qbuf, id, 0);
         set_tag_with(qbuf.c_str(), tag);
     }
 
