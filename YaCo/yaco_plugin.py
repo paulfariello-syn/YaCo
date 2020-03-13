@@ -60,7 +60,7 @@ class YaCoPlugin(idaapi.plugin_t):
             print("yaco: using %s" % path)
             sys.path.append(path)
 
-        input_filename = idc.GetIdbPath()
+        input_filename = idc.get_idb_path()
         if input_filename.count("_local.") > 0 and os.path.exists(".git"):
             print("yaco: initializing")
             start()
