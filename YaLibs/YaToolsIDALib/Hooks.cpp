@@ -207,6 +207,11 @@ namespace
             case processor_t::event_t::ev_validate_flirt_func:             return "ev_validate_flirt_func";
             case processor_t::event_t::ev_verify_noreturn:                 return "ev_verify_noreturn";
             case processor_t::event_t::ev_verify_sp:                       return "ev_verify_sp";
+            case processor_t::event_t::ev_replaying_undo:                  return "ev_replaying_undo";
+            case processor_t::event_t::ev_ending_undo:                     return "ev_ending_undo";
+            case processor_t::event_t::ev_set_code16_mode:                 return "ev_set_code16_mode";
+            case processor_t::event_t::ev_get_code16_mode:                 return "ev_get_code16_mode";
+            case processor_t::event_t::ev_last_cb_before_loader:           return "ev_last_cb_before_loader";
         }
         return "";
     }
@@ -215,27 +220,29 @@ namespace
     {
         switch (event)
         {
-            case dbg_notification_t::dbg_bpt:               return "dbg_bpt";
-            case dbg_notification_t::dbg_bpt_changed:       return "dbg_bpt_changed";
-            case dbg_notification_t::dbg_exception:         return "dbg_exception";
-            case dbg_notification_t::dbg_information:       return "dbg_information";
-            case dbg_notification_t::dbg_last:              return "dbg_last";
-            case dbg_notification_t::dbg_library_load:      return "dbg_library_load";
-            case dbg_notification_t::dbg_library_unload:    return "dbg_library_unload";
-            case dbg_notification_t::dbg_null:              return "dbg_null";
-            case dbg_notification_t::dbg_process_attach:    return "dbg_process_attach";
-            case dbg_notification_t::dbg_process_detach:    return "dbg_process_detach";
-            case dbg_notification_t::dbg_process_exit:      return "dbg_process_exit";
-            case dbg_notification_t::dbg_process_start:     return "dbg_process_start";
-            case dbg_notification_t::dbg_request_error:     return "dbg_request_error";
-            case dbg_notification_t::dbg_run_to:            return "dbg_run_to";
-            case dbg_notification_t::dbg_step_into:         return "dbg_step_into";
-            case dbg_notification_t::dbg_step_over:         return "dbg_step_over";
-            case dbg_notification_t::dbg_step_until_ret:    return "dbg_step_until_ret";
-            case dbg_notification_t::dbg_suspend_process:   return "dbg_suspend_process";
-            case dbg_notification_t::dbg_thread_exit:       return "dbg_thread_exit";
-            case dbg_notification_t::dbg_thread_start:      return "dbg_thread_start";
-            case dbg_notification_t::dbg_trace:             return "dbg_trace";
+            case dbg_notification_t::dbg_bpt:                   return "dbg_bpt";
+            case dbg_notification_t::dbg_bpt_changed:           return "dbg_bpt_changed";
+            case dbg_notification_t::dbg_exception:             return "dbg_exception";
+            case dbg_notification_t::dbg_information:           return "dbg_information";
+            case dbg_notification_t::dbg_last:                  return "dbg_last";
+            case dbg_notification_t::dbg_library_load:          return "dbg_library_load";
+            case dbg_notification_t::dbg_library_unload:        return "dbg_library_unload";
+            case dbg_notification_t::dbg_null:                  return "dbg_null";
+            case dbg_notification_t::dbg_process_attach:        return "dbg_process_attach";
+            case dbg_notification_t::dbg_process_detach:        return "dbg_process_detach";
+            case dbg_notification_t::dbg_process_exit:          return "dbg_process_exit";
+            case dbg_notification_t::dbg_process_start:         return "dbg_process_start";
+            case dbg_notification_t::dbg_request_error:         return "dbg_request_error";
+            case dbg_notification_t::dbg_run_to:                return "dbg_run_to";
+            case dbg_notification_t::dbg_step_into:             return "dbg_step_into";
+            case dbg_notification_t::dbg_step_over:             return "dbg_step_over";
+            case dbg_notification_t::dbg_step_until_ret:        return "dbg_step_until_ret";
+            case dbg_notification_t::dbg_suspend_process:       return "dbg_suspend_process";
+            case dbg_notification_t::dbg_thread_exit:           return "dbg_thread_exit";
+            case dbg_notification_t::dbg_thread_start:          return "dbg_thread_start";
+            case dbg_notification_t::dbg_trace:                 return "dbg_trace";
+            case dbg_notification_t::dbg_started_loading_bpts:  return "dbg_started_loading_bpts";
+            case dbg_notification_t::dbg_finished_loading_bpts: return "dbg_finished_loading_bpts";
         }
         return "";
     }
@@ -306,7 +313,7 @@ namespace
         const auto func_ea = get_func_by_frame(ea);
         if(func_ea != BADADDR)
             return qstring("frame ") + get_func_name(func_ea);
-        
+
         auto struc = get_struc(ea);
         if(struc)
             return qstring("struc ") + get_struc_name(struc->id);
@@ -1096,6 +1103,26 @@ namespace
         hooks.events_.touch_ea(ea);
     }
 
+    void item_color_changed(Hooks& /*hooks*/, va_list /*args*/)
+    {
+        // TODO
+    }
+
+    void callee_addr_changed(Hooks& /*hooks*/, va_list /*args*/)
+    {
+        // TODO
+    }
+
+    void bookmark_changed(Hooks& /*hooks*/, va_list /*args*/)
+    {
+        // TODO
+    }
+
+    void sgr_deleted(Hooks& /*hooks*/, va_list /*args*/)
+    {
+        // TODO
+    }
+
     ssize_t idp_event_handler(void* user_data, int notification_code, va_list va)
     {
         UNUSED(va);
@@ -1222,6 +1249,10 @@ namespace
             case idb_event::event_code_t::changing_range_cmt:       changing_range_cmt(*hooks, args); break;
             case idb_event::event_code_t::range_cmt_changed:        range_cmt_changed(*hooks, args); break;
             case idb_event::event_code_t::extra_cmt_changed:        extra_cmt_changed(*hooks, args); break;
+            case idb_event::event_code_t::item_color_changed:       item_color_changed(*hooks, args); break;
+            case idb_event::event_code_t::callee_addr_changed:      callee_addr_changed(*hooks, args); break;
+            case idb_event::event_code_t::bookmark_changed:         bookmark_changed(*hooks, args); break;
+            case idb_event::event_code_t::sgr_deleted:              sgr_deleted(*hooks, args); break;
         }
         return 0;
     }
